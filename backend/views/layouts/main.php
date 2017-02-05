@@ -40,7 +40,7 @@ AppAsset::register($this);
     } else {
        $menuSections = [
          ['label' => 'Источники', 'url' => ['/source']],
-         ['label' => 'Фиды', 'url' => ['/feed/index']],
+         ['label' => 'Фиды', 'url' => ['/feed']],
         ];
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')

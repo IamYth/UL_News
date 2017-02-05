@@ -21,22 +21,30 @@ class RssController extends \yii\console\Controller
             $rss = new RssParser();
             $rss->load($url);
             foreach($rss->getItems() as $item) {
-                var_dump($model->link);
                 $model = new Feed();
-                $proverka = $model->getFeed();
                 $model->source_id = $source->id;
-                var_dump($model->link);
                 $model->link = $item->getLink();
-                var_dump($model->link);
+                $link = $model->link;
+
+                if (!(Feed::find()->where(['link' => $link])->all())) {
+                    // echo "string";
+                    // break;
                 $model->name = $item->getTitle(); 
+                $title = $item->getTitle();
+                
+                // if (Feed::find()->where(['name' => $title])->all())
+                // {
+                //     echo "string";
+                //     break;
+                // }
+
                 $model->description = $item->getDescription();
-                $title = $model->name;
-                $filter = $model->multiexplode([",", ".", "|", ":", "!", "?", "«","»", " "], $title);
+                $filter = $model->multiexplode([",", ".", "|", ":", "!", "?", "«","»", " "], $model->name);
                 $blackTag = $model->getBlackTag();
                 $whiteTag = $model->getWhiteTag();
                 foreach ($filter as $needle) {
-                    $slovo = $model->mb_convert_case($needle);
-                    if (in_array($slovo, $blackTag)) {
+                    $word = $model->mb_convert_case($needle);
+                    if (in_array($word, $blackTag)) {
                         if (empty($status)) {
                             $model->status = 'Опубликованная новость Black';
                             $status = $model->status;
@@ -44,7 +52,7 @@ class RssController extends \yii\console\Controller
                             unset($status);
                         }
                     }
-                    if (in_array($slovo, $whiteTag)) {
+                    if (in_array($word, $whiteTag)) {
                         if (empty($status)) {
                             $model->status = 'Опубликованная новость White';
                             $status = $model->status;
@@ -53,40 +61,19 @@ class RssController extends \yii\console\Controller
                         }
                     }    
                 }
-                if (empty($model->status)) {
+                if (empty($word->status)) {
                     $model->status = 'Неопубликованная новость';
                     $status = $model->status;
                     echo "\n" . $status . ' ' . $title . "\n";
                     unset($status);
                 }
                 $model->save(false);
-                die;
-        	}
-            die;
+                //die;
+                }else{
+                    echo  "Новых новостей нет";
+                }
+            }
+           // die;
         }
     }
 }
-
-
-                    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    // foreach ($model->getFeed() as $model) {
-                    // var_dump($model->link);
-
-
-                //if (!empty($desc) && (stristr($desc, 'мед' ))) {
-                    //var_dump($desc);
-                //}
